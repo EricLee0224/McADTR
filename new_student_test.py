@@ -1,10 +1,3 @@
-"""
-Implementation of Chapt3.2 about students net training in the 'uninformed students' paper.
-
-Author: Luyao Chen
-Date: 2020.10
-"""
-
 import os
 import torch
 from torch import nn
