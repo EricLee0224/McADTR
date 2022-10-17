@@ -5,7 +5,6 @@ Author: Luyao Chen
 Date: 2020.10
 """
 
-from cgitb import small
 import os
 import torch
 from torch import nn
@@ -20,6 +19,7 @@ def increment_mean_and_var(mu_N, var_N, N, batch):
     '''Increment value of mean and variance based on
        current mean, var and new batch
     '''
+    # 均值/方差/样本数量/batch数
     # batch: (batch, h, w, vector)
     B = batch.size()[0]  # batch size
     # we want a descriptor vector -> mean over batch and pixels
@@ -33,32 +33,41 @@ def increment_mean_and_var(mu_N, var_N, N, batch):
 
 if __name__ == "__main__":
     import os
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
-    
-    st_id = 0  # student id, start from 0.
+    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+    #-----------------------------------
+    # student id(0/1/2), start from 0.
+    st_id = 0
+    # train student with p=17/33/65
+    patch_size = 17
+    #-----------------------------------
     # image height and width should be multiples of sL1∗sL2∗sL3...
-    rimH = 128
+    # 输入原图resize转换为128*128(最好是256*256,提高计算效率)
+    rimH = 128 #raw imageH
     rimW = 128
-
+    # ???
     imH = 128
     imW = 128
-    # 对应teacher 一张一张学
-    patch_size = 17
+    # one by one
     batch_size = 1
-    # 每张图上采样多少张
-    small_batch=512
-    # 1/5/10/20
-    epochs = 20
-    # 其余不变
+    # 一张图切出来256*256个patch，其中取512个作为一个iter，然后遍历所有patch。
+    # #512/1024/2048
+    small_batch = 512
+    # total eppchs 1/5/10/20
+    epochs = 5
+    # adam optim---------
     lr = 1e-4
     weight_decay = 1e-5
-    # 池化trick
+    # -------------------
+    # preprocess: padding for p=17/33/65
     multiprocess = multiPoolPrepare(patch_size, patch_size)
+    # save student model dir
     work_dir = 'work_dir/'
+    # preprocessed Mvtec dataset for train students (ImageFolder)
     dataset_dir = '../data/MAD1/'
-
+    # use CUDA to train
     device = torch.device('cuda')
 
+    # image size preprocess #teacher
     trans = transforms.Compose([
         transforms.Resize((rimH, rimW)),
         transforms.ToTensor(),
@@ -68,10 +77,9 @@ if __name__ == "__main__":
     dataloader = DataLoader(dataset, batch_size=batch_size,
                             shuffle=True, num_workers=8, pin_memory=True,drop_last=True)
 
-    #
+    # student
     trans_t = transforms.Compose([
         transforms.Resize((rimH, rimW)),
-        transforms.RandomCrop((imH,imW)),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
@@ -82,6 +90,7 @@ if __name__ == "__main__":
     student = StudentTrans()
     student = nn.DataParallel(student).to(device)
 
+    # pretrained T^ model
     _teacher = _Teacher(patch_size)
     checkpoint = torch.load(work_dir + '_teacher' + str(patch_size) + '.pth', torch.device('cpu'))
     _teacher.load_state_dict(checkpoint)
@@ -107,27 +116,36 @@ if __name__ == "__main__":
             with torch.no_grad():
                 # teacher_output = teacher(data)
                 teacher_output = (teacher(data) - t_mu) / torch.sqrt(t_var)
+            # 第0维数据数量
             bz=data.size(0)
-            # 池化加上一圈patch
+            # padding 256->272 (17*17)类推
             data1=multiprocess(data)
-            # 逐个像素滑动窗口，得到列向量
+            # 以每个像素为中心切17*17的patch,共256*256个
+            # unfold input(bs, c, h, w) -(1, 3, 272, 272)
             new_data=nn.Unfold(patch_size,1)(data1)
-            #
-            x = new_data.transpose(2, 1).contiguous()
-            #view成不同的batch，bz原始输出尺寸，imhimw生成了多少17*17patch
-            x = x.view(bz*imH*imW,3,17,17)
-
-
-            # view一下T的输出方便训练
+            # unfold output(bs, C*kernelsize[0]*kernelsize[1], L] L:裁剪后patch数量65536
+            # (1, 3*kernelsize[0]*kernelsize[1], 65536)
+            x = new_data.transpose(2, 1).contiguous() 
+            x = x.view(bz*imH*imW, 3, patch_size, patch_size)
+            teacher_output = teacher_output.view(bz*imH*imW, 128)
+            nlabels = labels.repeat(bz*imH*imW)
+            student_output = student(x, nlabels)
+           
+            # viewT的输出结构用于训练
             teacher_output = teacher_output.view(bz*imH*imW, 128)
             total_loss = 0
+            # 计算iter
             t = bz * imH * imW // small_batch
             for i1 in tqdm(range(t)):
                 ndata = x[i1 * t: (i1*t+small_batch)]
                 nteacher_output = teacher_output[i1*t:(i1 * t + small_batch)]
                 nlabels = labels.repeat(small_batch)
-                student_output = student(ndata,nlabels)
-                loss = F.mse_loss(student_output, nteacher_output)
+                student_output, classic = student(ndata,None)
+                # KD
+                loss1 = F.mse_loss(student_output, nteacher_output)
+                # Class！！！！！！！！！！强监督
+                loss2 = F.cross_entropy(classic, nlabels)
+                loss= loss1 + loss2
                 optim.zero_grad()
                 loss.backward()
                 optim.step()

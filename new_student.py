@@ -2,11 +2,9 @@ import torch
 from transformer import Transformer
 from pencoder import NestedTensor, nested_tensor_from_tensor_list, PositionEmbeddingLearned
 import torch.nn as nn
-import torch
 import numpy as np
 from torch import nn
 from fast_dense_feature_extractor import *
-
 
 class _Teacher17(nn.Module):
     """
@@ -121,6 +119,7 @@ class _Teacher65(nn.Module):
         x = self.decode(x)
         return x
 
+
 class PoseRegressor(nn.Module):
     """ A simple MLP to regress a pose component"""
     def __init__(self, decoder_dim, output_dim, use_prior=False):
@@ -212,42 +211,50 @@ class Teacher17(nn.Module):
 #                 expected_pose[i, :] = x_t
 #         return x
 
-#对17*17/33*33/65*65的patch进行操作
+# 框架功能基本参照pose
+# 对17*17/33*33/65*65的patch进行操作
 class StudentTrans(nn.Module):
     def __init__(self, ):
         super(StudentTrans, self).__init__()
+        # 3转128维度
         self.input_proj = nn.Conv2d(3, 128, kernel_size=1)
         # 15类-15个learnable query
         self.query_embed = nn.Embedding(15, 128)
+        # 64：编码维度
         self.position_embedding = PositionEmbeddingLearned(64)
         # 类别选择log_softmax
-        self.log_softmax = nn.LogSoftmax(dim=1)
-        # 全连接变成类别向量备选
+        self.log_softmax = nn.LogSoftmax(dim=1) # 维度1上元素相加＝1
+        # 将每个像素的[128维描述向量]变成[1维类别向量]备选
         self.scene_embed = nn.Linear(128, 1)
-        # 单独15个回归器
+        # 构建单独15个回归器 （多层fc—）
         self.regressor_head_t = nn.Sequential(*[PoseRegressor(128, 128) for _ in range(15)])
         self.transformer = Transformer()
 
-    def forward(self, x, label):
+    def forward(self, x, label=None):
         b = x.size(0)
         # nested tensor mask
         xsamples = nested_tensor_from_tensor_list(x)
         x1 = xsamples.tensors
         mask = xsamples.mask
-        # 3-128
+        # 3->128
         x_proj = self.input_proj(x1)
+        # +positional Embedding
         pos = self.position_embedding(x_proj)
-        # trans输出
+        # transformer输入:(x_proj, mask, self.query_embed.weight, pos)
         local_descs = self.transformer(x_proj, mask, self.query_embed.weight, pos)[0][0]
-        #batch [15,128]
-        scene_log_distr = self.log_softmax(self.scene_embed(local_descs)).squeeze(2)
-        # 找最大值索引
+        # local_descs局部描述输出即为:[1, 15, 128]
+        out = self.scene_embed(local_descs)
+        scene_log_distr = self.log_softmax(out).squeeze(2) #去掉多余维度只要第3维信息
+        # return最大值类别索引序号
         _, max_indices = scene_log_distr.max(dim=1)
-        # 没用的全置0
+       
+        # train------------------------------------------------------------------------------
+        #权重向量 选出对应类输出 没用的置0
         w = local_descs * 0
         w[range(b), max_indices, :] = 1
-        # 选
+        # 全局描述
         global_desc_t = torch.sum(w * local_descs, dim=1)
+        # 标签，训练加，测试可加可不加。
         if label is not None:
             max_indices = label
         # 输出期望类别的128维向量（pixel info）
@@ -255,7 +262,8 @@ class StudentTrans(nn.Module):
         for i1 in range(b):
             x_t = self.regressor_head_t[max_indices[i1]](global_desc_t[i1].unsqueeze(0))
             expected_vec[i1, :] = x_t
-        return expected_vec
+        return expected_vec,out
+        # ------------------------------------------------------------------------------
 
 class Teacher33(nn.Module):
     """
@@ -370,7 +378,7 @@ def _Teacher(patch_size):
         print('No implementation of net wiht patch_size: ' + str(patch_size))
         return None
 
-
+# 加载teacher
 def TeacherOrStudent(patch_size, base_net, imH=None, imW=None):
     if patch_size == 17:
         return Teacher17(base_net)
@@ -391,7 +399,7 @@ def TeacherOrStudent(patch_size, base_net, imH=None, imW=None):
 if __name__ == "__main__":
     import os
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
     net = StudentTrans()
     net = nn.DataParallel(net).cuda()
