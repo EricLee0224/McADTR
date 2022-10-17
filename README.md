@@ -8,11 +8,11 @@ https://github.com/LuyaooChen/uninformed-students-pytorch
 https://github.com/yolish/multi-scene-pose-transformer  
   
 model: new_student.py  
-train student: new_train_student.py
-train teacher: train_teacher.py
-test: evaluate_1.py
-see pixel infor test: evaluate_~.py
+train student: new_train_student.py  
+train teacher: train_teacher.py  
+test: evaluate_1.py  
+see pixel infor test: evaluate_~.py  
 
-dataset format:
-~/data/MVtec/
-~/data/MAD1/bottle/.jpeg
+dataset format:  
+~/data/MVtec/  
+~/data/MAD1/bottle/.jpeg  
