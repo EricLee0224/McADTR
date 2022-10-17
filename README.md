@@ -6,7 +6,8 @@ Modified based on the following code base：
 https://github.com/LuyaooChen/uninformed-students-pytorch  
 2.ICCV2021.Learning mult-scene absolute pose regression with transformers  
 https://github.com/yolish/multi-scene-pose-transformer  
-  
+
+## ps
 model: new_student.py  
 train student: new_train_student.py  
 train teacher: teacher_train.py  
