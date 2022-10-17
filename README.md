@@ -9,7 +9,7 @@ https://github.com/yolish/multi-scene-pose-transformer
   
 model: new_student.py  
 train student: new_train_student.py  
-train teacher: train_teacher.py  
+train teacher: teacher_train.py  
 test: evaluate_1.py  
 see pixel infor test: evaluate_~.py  
 
