@@ -1,4 +1,4 @@
-# McADTR： Multi-class Anomaly Detection Transformer with Heterogeneous Knowledge Distillation
+# McADTR: Multi-class Anomaly Detection Transformer with Heterogeneous Knowledge Distillation
 2022 Tsinghua University AIR-DISCOVER summer research project  
 
 Modified based on the following code base：   
