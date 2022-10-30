@@ -1,5 +1,5 @@
 # McADTR： Multi-class Anomaly Detection Transformer with Heterogeneous Knowledge Distillation
-2022 Tsinghua University AIR summer research project  
+2022 Tsinghua University AIR-DISCOVER summer research project  
 
 Modified based on the following code base：   
 1.CVPR2020.uninformed students student-teacher anomaly detection with discriminative latent embeddings  
