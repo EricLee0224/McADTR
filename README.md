@@ -21,3 +21,11 @@ dataset format:
 ## Details
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/1.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/2.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/3.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/4.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/5.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/6.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/7.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/8.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/9.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/10.PNG)
