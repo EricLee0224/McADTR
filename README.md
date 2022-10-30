@@ -17,3 +17,7 @@ see pixel infor test: evaluate_~.py
 dataset format:  
 ~/data/MVtec/  
 ~/data/MAD1/bottle/.jpeg  
+
+## Details
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/%E5%B9%BB%E7%81%AF%E7%89%871.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/%E5%B9%BB%E7%81%AF%E7%89%871.PNG)
