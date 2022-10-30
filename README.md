@@ -19,5 +19,5 @@ dataset format:
 ~/data/MAD1/bottle/.jpeg  
 
 ## Details
-![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/%E5%B9%BB%E7%81%AF%E7%89%871.PNG)
-![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/%E5%B9%BB%E7%81%AF%E7%89%871.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/1.PNG)
+![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/2.PNG)
