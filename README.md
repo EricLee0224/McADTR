@@ -14,7 +14,7 @@ model: new_student.py
 train student: new_train_student.py  
 train teacher: teacher_train.py  
 test: evaluate_1.py  
-see pixel infor test: evaluate_~.py  
+pixel information test: evaluate_~.py  
 
 dataset format:  
 .../data/MVtec/  
