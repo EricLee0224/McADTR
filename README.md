@@ -30,3 +30,15 @@ dataset format:
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/7.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/9.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/10.PNG)
+
+## Citation
+    @misc{weize2022airmcadtr,
+    title = {McADTR: Multi-class Anomaly Detection Transformer with Heterogeneous Knowledge Distillation},
+    author = {Weize Li, Qiang Zhou, Hao Zhao},
+    journal = {AIR-DISCOVER Project},
+    url = {https://github.com/EricLee0224/McADTR},
+    year = {2022}
+    }
+
+
+
