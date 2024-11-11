@@ -1,15 +1,9 @@
 # McADTR: Multi-class Anomaly Detection Transformer with Heterogeneous Knowledge Distillation
-2022 Tsinghua University AIR-DISCOVER summer research project  
+2022 AIR-DISCOVER Summer Research Project, Tsinghua University.
 
-official implementation of McADTR  
+Pytorch implementation of McADTR. 
 
-Modified based on the following code base：   
-1.CVPR2020.uninformed students student-teacher anomaly detection with discriminative latent embeddings  
-https://github.com/LuyaooChen/uninformed-students-pytorch  
-2.ICCV2021.Learning mult-scene absolute pose regression with transformers  
-https://github.com/yolish/multi-scene-pose-transformer  
-
-## ps
+## docs
 model: new_student.py  
 train student: new_train_student.py  
 train teacher: teacher_train.py  
@@ -21,7 +15,6 @@ dataset format:
 .../data/MAD1/bottle/.jpeg  
 
 ## Details
-![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/1.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/2.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/3.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/4.PNG)
@@ -29,7 +22,13 @@ dataset format:
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/6.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/7.PNG)
 ![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/9.PNG)
-![Alt text](https://github.com/EricLee0224/McADTR/blob/main/img/10.PNG)
+
+## Acknowledgement
+Modified based on the following code base：   
+1.[CVPR2020] Uninformed students student-teacher anomaly detection with discriminative latent embeddings  
+https://github.com/LuyaooChen/uninformed-students-pytorch  
+2.[ICCV2021] Learning mult-scene absolute pose regression with transformers  
+https://github.com/yolish/multi-scene-pose-transformer
 
 ## Citation
     @misc{weize2022airmcadtr,
